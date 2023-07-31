@@ -54,10 +54,11 @@ def main():
     #     pass
 
     data = search(user_input, tld='co.in', lang='en', num=int(count), start=0, stop=int(count), pause=2)
+    st.title("URLs")
     for url in data:
         st.write(url)
 
-    st.title("URLs")
+
 
 
 if __name__ == '__main__':
