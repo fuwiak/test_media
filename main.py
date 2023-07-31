@@ -50,12 +50,14 @@ def main():
 
 
 
-    if st.sidebar.button("Save Data"):
-        pass
+    # if st.sidebar.button("Save Data"):
+    #     pass
 
     data = search(user_input, tld='co.in', lang='en', num=int(count), start=0, stop=int(count), pause=2)
     for url in data:
         st.write(url)
+
+    st.title("URLs")
 
 
 if __name__ == '__main__':
