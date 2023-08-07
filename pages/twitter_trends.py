@@ -106,7 +106,7 @@ def fetch_and_print_tweets(username: str) -> dict:
 if st.button("Find tweets for a specific user"):
     try:
         tweets = fetch_and_print_tweets(username)
-        st.write(tweets)
+        # st.write(tweets)
         show_table_grid(tweets)
         # Show balloons
         st.balloons()
