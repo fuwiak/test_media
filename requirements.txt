@@ -165,9 +165,6 @@ websocket-client==1.6.1
 widgetsnbextension==4.0.5
 zipp==3.15.0
 git+https://github.com/JustAnotherArchivist/snscrape.git
-beautifulsoup4
-httpx
-openpyxl
-dateutils
-tweety-ns
+git+https://github.com/mahrtayyab/tweety.git
+
 
