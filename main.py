@@ -53,10 +53,11 @@ def main():
     # if st.sidebar.button("Save Data"):
     #     pass
 
-    data = search(user_input, tld='co.in', lang='en', num=int(count), start=0, stop=int(count), pause=2)
-    st.title("URLs")
-    for url in data:
-        st.write(url)
+    if st.sidebar.button("Get Data"):
+        data = search(user_input, tld='co.in', lang='en', num=int(count), start=0, stop=int(count), pause=2)
+        st.title("URLs")
+        for url in data:
+            st.write(url)
 
 
 
