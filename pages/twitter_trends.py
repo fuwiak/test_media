@@ -2,16 +2,16 @@ import streamlit as st
 import pandas as pd
 from st_aggrid import GridOptionsBuilder, AgGrid, GridUpdateMode, DataReturnMode
 import snscrape.modules.twitter as sntwitter
+from tweety import Twitter
+import pandas as pd
 
 st.set_page_config(layout="centered", page_icon="🎓", page_title="AI")
-st.title("Twitter Analysis")
+st.title("Keyword Twitter Analysis")
 
 if st.button("Reset"):
     st.experimental_rerun()
 
 #reset IP address to avoid getting banned streamlit
-
-
 
 st.write("Enter the keyword you want to search for")
 keyword = st.text_input("Keyword", "bitcoin")
@@ -27,7 +27,6 @@ end_date = st.date_input("End date", value=None, min_value=None, max_value=None,
 
 query = keyword + f" lang:{lang} until:{end_date} since:{start_date}"
 
-# query = "Kazachstan until:2022-01-01 since:2021-01-01"
 
 def show_table_grid(data):
     gb = GridOptionsBuilder.from_dataframe(data)
@@ -49,28 +48,69 @@ def show_table_grid(data):
     return grid_response
 
 
-#run button
-if st.button("Run"):
-    tweets_list2 = []
-    #show query
-    st.write(query)
+def fetch_tweets(query: str, limit: int = 100) -> pd.DataFrame:
+    """
+    Fetch tweets based on a query up to a given limit.
+
+    Parameters:
+    - query (str): Query string for the tweets search.
+    - limit (int): Maximum number of tweets to return.
+
+    Returns:
+    - pd.DataFrame: DataFrame containing fetched tweets' datetime, text, and username.
+    """
+    tweets_list = []
     try:
-        for i,tweet in enumerate(sntwitter.TwitterSearchScraper(query).get_items()):
-            if i>limit:
+        for i, tweet in enumerate(
+                sntwitter.TwitterSearchScraper(query).get_items()):
+            if i > limit:
                 break
-            tweets_list2.append([tweet.date, tweet.content, tweet.user.username])
-
-        # Creating a dataframe from the tweets list above
-        global tweets_df2
-        tweets_df2 = pd.DataFrame(tweets_list2, columns=['Datetime', 'Text', 'Username'])
-
-        # Display first 5 entries from dataframe
-        st.write(tweets_df2.head())
-        show_table_grid(tweets_df2)
-        #st balloons
-        st.balloons()
-    except:
+            tweets_list.append(
+                [tweet.date, tweet.content, tweet.user.username])
+        tweets_df = pd.DataFrame(tweets_list,
+                                 columns=['Datetime', 'Text', 'Username'])
+        return tweets_df
+    except Exception as e:
+        # st.write(e)
         st.write("No tweets found")
         st.stop()
 
 
+if st.button("Run"):
+    # Show query
+    st.write(query)
+    try:
+        tweets_df2 = fetch_tweets(query)
+        # Display first 5 entries from dataframe
+        st.write(tweets_df2.head())
+        show_table_grid(tweets_df2)
+        # Show balloons
+        st.balloons()
+    except Exception as e:
+        st.write(e)
+        st.write("No tweets found")
+        st.stop()
+
+st.markdown(""" # Get posts from a specific user""")
+st.write("Enter the username you want to search for")
+username = st.text_input("Username", "elonmusk")
+
+def fetch_and_print_tweets(username: str) -> dict:
+    app = Twitter("session")
+
+    # Fetch tweets
+    all_tweets = app.get_tweets(username)
+    tweets = pd.DataFrame(list(all_tweets))
+    return tweets
+
+if st.button("Find tweets for a specific user"):
+    try:
+        tweets = fetch_and_print_tweets(username)
+        st.write(tweets)
+        show_table_grid(tweets)
+        # Show balloons
+        st.balloons()
+    except Exception as e:
+        st.write(e)
+        st.write("No tweets found")
+        st.stop()
